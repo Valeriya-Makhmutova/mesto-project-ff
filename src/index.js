@@ -1,18 +1,13 @@
 import { initialCards } from "./cards.js";
 import "./index.css";
-import {
-  createCard,
-  deleteCard,
-  handleLikeIsActive,
-} from "./components/cards.js";
+import { createCard, deleteCard } from "./components/cards.js";
 import {
   openModal,
   closeModal,
-  handleFormSubmit,
-  handleAddingCard,
+  closeByOverlayClick,
 } from "./components/modal.js";
 
-export const cardsList = document.querySelector(".places__list");
+const cardsList = document.querySelector(".places__list");
 
 initialCards.forEach((item) => {
   cardsList.append(createCard(item, deleteCard));
@@ -22,27 +17,26 @@ initialCards.forEach((item) => {
 
 //     popupEdit                                                   модальное окно "редактировать профиль"
 
-export const popupEdit = document.querySelector(".popup_type_edit");
+const popupEdit = document.querySelector(".popup_type_edit");
 const profileEditButton = document.querySelector(".profile__edit-button");
 const closeButtonInEdit = popupEdit.querySelector(".popup__close");
 
-export const formEditElement = popupEdit.querySelector(".popup__form");
+const formEditElement = popupEdit.querySelector(".popup__form");
 
-export const nameInputEditForm = formEditElement.querySelector(
+const nameInputEditForm = formEditElement.querySelector(
   ".popup__input_type_name"
 );
-export const jobInputEditForm = formEditElement.querySelector(
+const jobInputEditForm = formEditElement.querySelector(
   ".popup__input_type_description"
 );
 
-export const profileTitle = document.querySelector(".profile__title");
-export const profileDescription = document.querySelector(
-  ".profile__description"
-);
+const profileTitle = document.querySelector(".profile__title");
+const profileDescription = document.querySelector(".profile__description");
 
 profileEditButton.addEventListener("click", function (evt) {
   //на кнопку редактировать добавили слушатель событий
-
+  nameInputEditForm.value = "";
+  jobInputEditForm.value = "";
   openModal(popupEdit);
 
   nameInputEditForm.value = profileTitle.textContent;
@@ -51,93 +45,72 @@ profileEditButton.addEventListener("click", function (evt) {
 
 closeButtonInEdit.addEventListener("click", function (evt) {
   closeModal(popupEdit);
-  nameInputEditForm.value = "";
-  jobInputEditForm.value = "";
 });
 
-popupEdit.addEventListener("click", function (evt) {
-  evt.stopPropagation();
-  if (evt.target === evt.currentTarget) {
-    closeModal(popupEdit);
-    nameInputEditForm.value = "";
-    jobInputEditForm.value = "";
-  }
-});
+popupEdit.addEventListener("click", closeByOverlayClick);
 
 formEditElement.addEventListener("submit", handleFormSubmit);
 
 //  popupNewCard                                                   модальное окно "новое место"
 
-export const popupNewCard = document.querySelector(".popup_type_new-card");
+const popupNewCard = document.querySelector(".popup_type_new-card");
 const profileAddButton = document.querySelector(".profile__add-button");
 const closeButtonInNewCard = popupNewCard.querySelector(".popup__close");
 
 const formAddCardElement = popupNewCard.querySelector(".popup__form");
 
-export const nameInputNewCard = formAddCardElement.querySelector(
+const nameInputNewCard = formAddCardElement.querySelector(
   ".popup__input_type_card-name"
 );
-export const linkInputNewCard = formAddCardElement.querySelector(
+const linkInputNewCard = formAddCardElement.querySelector(
   ".popup__input_type_url"
 );
 
 profileAddButton.addEventListener("click", function (evt) {
+  nameInputNewCard.value = "";
+  linkInputNewCard.value = "";
   openModal(popupNewCard);
 });
 
 closeButtonInNewCard.addEventListener("click", function (evt) {
-  // popupNewCard.classList.remove('popup_is-opened');
   closeModal(popupNewCard);
-  nameInputNewCard.value = "";
-  linkInputNewCard.value = "";
 });
 
-popupNewCard.addEventListener("click", function (evt) {
-  evt.stopPropagation();
-  if (evt.target === evt.currentTarget) {
-    // popupNewCard.classList.remove('popup_is-opened');
-    closeModal(popupNewCard);
-    nameInputNewCard.value = "";
-    linkInputNewCard.value = "";
-  }
-});
+popupNewCard.addEventListener("click", closeByOverlayClick);
 
 formAddCardElement.addEventListener("submit", handleAddingCard);
 
 //   popupImage                                                      модальное окно "картинка карточки"
 
-export const popupImage = document.querySelector(".popup_type_image");
-const cardElements = document.querySelectorAll(".card");
-const imageInPopup = popupImage.querySelector(".popup__image");
-const popupCaption = popupImage.querySelector(".popup__caption");
-const closeButtonInImage = popupImage.querySelector(".popup__close");
+const popupImage = document.querySelector(".popup_type_image");
 
-cardElements.forEach((card) => {
-  card.addEventListener("click", function (evt) {
-    const imageElement = evt.target;
-    if (imageElement.classList.contains("card__image")) {
-      openModal(popupImage);
+popupImage.addEventListener("click", closeByOverlayClick);
 
-      const srcOfImage = imageElement.getAttribute("src");
-      const altOfImage = imageElement.getAttribute("alt");
+// функция  обработчик отправки формы
+function handleFormSubmit(evt) {
+  evt.preventDefault();
 
-      imageInPopup.setAttribute("src", `${srcOfImage}`);
-      popupCaption.textContent = altOfImage;
-    }
-  });
+  const name = evt.target.querySelector(".popup__input_type_name").value;
+  const job = evt.target.querySelector(".popup__input_type_description").value;
 
-  closeButtonInImage.addEventListener("click", function (evt) {
-    closeModal(popupImage);
-  });
-});
+  profileTitle.textContent = name;
+  profileDescription.textContent = job;
 
-popupImage.addEventListener("click", function (evt) {
-  evt.stopPropagation();
-  if (evt.target === evt.currentTarget) {
-    closeModal(popupImage);
-  }
-});
+  closeModal(document.querySelector(".popup_is-opened"));
+}
 
-// лайк карточки                                                    лайк карточки
+// функция обработчик добавления карточки
+function handleAddingCard(evt) {
+  evt.preventDefault();
 
-document.addEventListener("click", handleLikeIsActive);
+  const name = evt.target.querySelector(".popup__input_type_card-name").value;
+  const link = evt.target.querySelector(".popup__input_type_url").value;
+
+  const cardData = { name, link };
+
+  const cardElement = createCard(cardData, deleteCard);
+
+  cardsList.prepend(cardElement);
+
+  closeModal(document.querySelector(".popup_is-opened"));
+}
