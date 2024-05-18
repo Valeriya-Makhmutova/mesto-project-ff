@@ -1,10 +1,12 @@
-import { openModal, closeModal } from "./modal";
-
-export function createCard(cardData, onDeleteButtonClick) {
+export function createCard(
+  cardData,
+  onDeleteButtonClick,
+  openModal,
+  closeModal,
+  popupElements
+) {
   const cardTemplate = document.querySelector("#card-template").content;
-
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
-
   const cardImage = cardElement.querySelector(".card__image");
 
   cardImage.src = cardData.link;
@@ -21,27 +23,15 @@ export function createCard(cardData, onDeleteButtonClick) {
   const likeButton = cardElement.querySelector(".card__like-button");
   likeButton.addEventListener("click", handleLikeIsActive);
 
-  cardElement.addEventListener("click", function (evt) {
-    const popupImage = document.querySelector(".popup_type_image");
+  cardImage.addEventListener("click", function (evt) {
+    openModal(popupElements.popupImage);
 
-    if (evt.target.classList.contains("card__image")) {
-      const imageElement = evt.target;
+    popupElements.imageInPopup.src = cardData.link;
+    popupElements.imageInPopup.alt = cardData.name;
+    popupElements.popupCaption.textContent = cardData.name;
 
-      const imageInPopup = popupImage.querySelector(".popup__image");
-      const popupCaption = popupImage.querySelector(".popup__caption");
-
-      openModal(popupImage);
-
-      const srcOfImage = imageElement.getAttribute("src");
-      const altOfImage = imageElement.getAttribute("alt");
-
-      imageInPopup.src = srcOfImage;
-      popupCaption.textContent = altOfImage;
-    }
-
-    const closeButtonInImage = popupImage.querySelector(".popup__close");
-    closeButtonInImage.addEventListener("click", function (evt) {
-      closeModal(popupImage);
+    popupElements.closeButtonInImage.addEventListener("click", function (evt) {
+      closeModal(popupElements.popupImage);
     });
   });
 

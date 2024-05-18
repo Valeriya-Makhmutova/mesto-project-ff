@@ -8,9 +8,23 @@ import {
 } from "./components/modal.js";
 
 const cardsList = document.querySelector(".places__list");
+// элементы попапа
+const popupImage = document.querySelector(".popup_type_image");
+const imageInPopup = popupImage.querySelector(".popup__image");
+const popupCaption = popupImage.querySelector(".popup__caption");
+const closeButtonInImage = popupImage.querySelector(".popup__close");
+
+const popupElements = {
+  popupImage,
+  imageInPopup,
+  popupCaption,
+  closeButtonInImage,
+};
 
 initialCards.forEach((item) => {
-  cardsList.append(createCard(item, deleteCard));
+  cardsList.append(
+    createCard(item, deleteCard, openModal, closeModal, popupElements)
+  );
 });
 //initialCards - исходный массив с карточками
 //.places__list - класс, куда должны попадать карточки
@@ -35,12 +49,9 @@ const profileDescription = document.querySelector(".profile__description");
 
 profileEditButton.addEventListener("click", function (evt) {
   //на кнопку редактировать добавили слушатель событий
-  nameInputEditForm.value = "";
-  jobInputEditForm.value = "";
-  openModal(popupEdit);
-
   nameInputEditForm.value = profileTitle.textContent;
   jobInputEditForm.value = profileDescription.textContent;
+  openModal(popupEdit);
 });
 
 closeButtonInEdit.addEventListener("click", function (evt) {
@@ -82,8 +93,6 @@ formAddCardElement.addEventListener("submit", handleAddingCard);
 
 //   popupImage                                                      модальное окно "картинка карточки"
 
-const popupImage = document.querySelector(".popup_type_image");
-
 popupImage.addEventListener("click", closeByOverlayClick);
 
 // функция  обработчик отправки формы
@@ -96,9 +105,8 @@ function handleFormSubmit(evt) {
   profileTitle.textContent = name;
   profileDescription.textContent = job;
 
-  closeModal(document.querySelector(".popup_is-opened"));
+  closeModal(popupEdit);
 }
-
 // функция обработчик добавления карточки
 function handleAddingCard(evt) {
   evt.preventDefault();
@@ -108,9 +116,15 @@ function handleAddingCard(evt) {
 
   const cardData = { name, link };
 
-  const cardElement = createCard(cardData, deleteCard);
+  const cardElement = createCard(
+    cardData,
+    deleteCard,
+    openModal,
+    closeModal,
+    popupElements
+  );
 
   cardsList.prepend(cardElement);
 
-  closeModal(document.querySelector(".popup_is-opened"));
+  closeModal(popupNewCard);
 }
