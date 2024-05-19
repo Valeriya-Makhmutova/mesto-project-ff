@@ -1,7 +1,7 @@
 export function createCard(
   cardData,
   onDeleteButtonClick,
-  openModal,
+  openModal,   // параметр функции
   closeModal,
   popupElements
 ) {
@@ -24,7 +24,8 @@ export function createCard(
   likeButton.addEventListener("click", handleLikeIsActive);
 
   cardImage.addEventListener("click", function (evt) {
-    openModal(popupElements.popupImage);
+    // функция openModal - аргумент функции и передаётся в текущую функцию из файла index.js
+    openModal(popupElements.popupImage);  
 
     popupElements.imageInPopup.src = cardData.link;
     popupElements.imageInPopup.alt = cardData.name;

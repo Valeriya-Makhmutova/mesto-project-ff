@@ -2,6 +2,7 @@ import { initialCards } from "./cards.js";
 import "./index.css";
 import { createCard, deleteCard } from "./components/cards.js";
 import {
+  // импорт из modal.js
   openModal,
   closeModal,
   closeByOverlayClick,
@@ -23,7 +24,8 @@ const popupElements = {
 
 initialCards.forEach((item) => {
   cardsList.append(
-    createCard(item, deleteCard, openModal, closeModal, popupElements)
+    // передача функции openModal в качестве аргумента
+    createCard(item, deleteCard, openModal, closeModal, popupElements) 
   );
 });
 //initialCards - исходный массив с карточками
@@ -119,7 +121,7 @@ function handleAddingCard(evt) {
   const cardElement = createCard(
     cardData,
     deleteCard,
-    openModal,
+    openModal,  // передача функции openModal в качестве аргумента
     closeModal,
     popupElements
   );
