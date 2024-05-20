@@ -1,9 +1,7 @@
 export function createCard(
   cardData,
   onDeleteButtonClick,
-  openModal,   // параметр функции
-  closeModal,
-  popupElements
+  handleOpenImagePopup
 ) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
@@ -23,18 +21,7 @@ export function createCard(
   const likeButton = cardElement.querySelector(".card__like-button");
   likeButton.addEventListener("click", handleLikeIsActive);
 
-  cardImage.addEventListener("click", function (evt) {
-    // функция openModal - аргумент функции и передаётся в текущую функцию из файла index.js
-    openModal(popupElements.popupImage);  
-
-    popupElements.imageInPopup.src = cardData.link;
-    popupElements.imageInPopup.alt = cardData.name;
-    popupElements.popupCaption.textContent = cardData.name;
-
-    popupElements.closeButtonInImage.addEventListener("click", function (evt) {
-      closeModal(popupElements.popupImage);
-    });
-  });
+  cardImage.addEventListener("click", handleOpenImagePopup);
 
   return cardElement;
 }

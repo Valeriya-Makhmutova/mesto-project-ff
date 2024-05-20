@@ -25,7 +25,7 @@ const popupElements = {
 initialCards.forEach((item) => {
   cardsList.append(
     // передача функции openModal в качестве аргумента
-    createCard(item, deleteCard, openModal, closeModal, popupElements) 
+    createCard(item, deleteCard, handleOpenImagePopup)
   );
 });
 //initialCards - исходный массив с карточками
@@ -118,15 +118,26 @@ function handleAddingCard(evt) {
 
   const cardData = { name, link };
 
-  const cardElement = createCard(
-    cardData,
-    deleteCard,
-    openModal,  // передача функции openModal в качестве аргумента
-    closeModal,
-    popupElements
-  );
+  const cardElement = createCard(cardData, deleteCard, handleOpenImagePopup);
 
   cardsList.prepend(cardElement);
 
   closeModal(popupNewCard);
+}
+
+function handleOpenImagePopup(evt) {
+  evt.preventDefault();
+
+  const name = evt.target.alt;
+  const link = evt.target.src;
+
+  imageInPopup.src = link;
+  imageInPopup.alt = name;
+  popupCaption.textContent = name;
+
+  openModal(popupImage);
+
+  popupElements.closeButtonInImage.addEventListener("click", function (evt) {
+    closeModal(popupImage);
+  });
 }
