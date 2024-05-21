@@ -2,7 +2,6 @@ import { initialCards } from "./cards.js";
 import "./index.css";
 import { createCard, deleteCard } from "./components/cards.js";
 import {
-  // импорт из modal.js
   openModal,
   closeModal,
   closeByOverlayClick,
@@ -23,10 +22,7 @@ const popupElements = {
 };
 
 initialCards.forEach((item) => {
-  cardsList.append(
-    // передача функции openModal в качестве аргумента
-    createCard(item, deleteCard, handleOpenImagePopup)
-  );
+  cardsList.append(createCard(item, deleteCard, handleOpenImagePopup));
 });
 //initialCards - исходный массив с карточками
 //.places__list - класс, куда должны попадать карточки
@@ -137,7 +133,7 @@ function handleOpenImagePopup(evt) {
 
   openModal(popupImage);
 
-  popupElements.closeButtonInImage.addEventListener("click", function (evt) {
+  closeButtonInImage.addEventListener("click", function () {
     closeModal(popupImage);
   });
 }
