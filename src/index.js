@@ -60,6 +60,8 @@ popupEdit.addEventListener("click", closeByOverlayClick);
 
 formEditElement.addEventListener("submit", handleFormSubmit);
 
+
+
 //  popupNewCard                                                   модальное окно "новое место"
 
 const popupNewCard = document.querySelector(".popup_type_new-card");
@@ -88,6 +90,10 @@ closeButtonInNewCard.addEventListener("click", function (evt) {
 popupNewCard.addEventListener("click", closeByOverlayClick);
 
 formAddCardElement.addEventListener("submit", handleAddingCard);
+
+closeButtonInImage.addEventListener("click", function () {
+  closeModal(popupImage);
+});
 
 //   popupImage                                                      модальное окно "картинка карточки"
 
@@ -121,19 +127,10 @@ function handleAddingCard(evt) {
   closeModal(popupNewCard);
 }
 
-function handleOpenImagePopup(evt) {
-  evt.preventDefault();
-
-  const name = evt.target.alt;
-  const link = evt.target.src;
-
+function handleOpenImagePopup(name, link) {
   imageInPopup.src = link;
   imageInPopup.alt = name;
   popupCaption.textContent = name;
 
   openModal(popupImage);
-
-  closeButtonInImage.addEventListener("click", function () {
-    closeModal(popupImage);
-  });
 }
