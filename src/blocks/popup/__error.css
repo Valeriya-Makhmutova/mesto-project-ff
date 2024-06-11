@@ -1,0 +1,25 @@
+.popup__error {
+  display: block;
+  font-size: 12px;
+  color: red;
+  font-weight: 400;
+  line-height: 14.52px;
+}
+
+/* .popup__button-error {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+  color: rgba(0, 0, 0, 0.2);
+} */
+
+.popup__button_disabled {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.popup__button_disabled:hover {
+  background-color: transparent;
+  cursor: default;
+}
+
