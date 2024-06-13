@@ -5,12 +5,14 @@ export function createCard(configCreateCard) {
   const cardLikeCounter = cardElement.querySelector(".card__like-counter");
   const cardUserId = configCreateCard.cardData.cardUserId;
   const cardId = configCreateCard.cardData.cardId;
+  const likeButton = cardElement.querySelector(".card__like-button");
 
   const deleteIcon = cardElement.querySelector(".card__delete-button");
   const handleOpendeltePopup = configCreateCard.openPopupDeleteCard;
   const closeModal = configCreateCard.closeModal;
   const addLike = configCreateCard.addLike;
   const removeLike = configCreateCard.removeLike;
+  const isMyLikeHere = configCreateCard.isMyLikeHere;
 
   deleteIcon.addEventListener("click", handleOpendeltePopup);
 
@@ -20,12 +22,14 @@ export function createCard(configCreateCard) {
   const cardTitle = cardElement.querySelector(".card__title");
   cardTitle.textContent = configCreateCard.cardData.name;
 
-  // const deleteButton = cardElement.querySelector(".card__delete-button");
-  // deleteButton.addEventListener("click", () => {
-  //   configCreateCard.onDeleteButtonClick(cardElement);
-  // });
+  if (isMyLikeHere) {
+    if (
+      isMyLikeHere(configCreateCard.cardData.likesData, configCreateCard.userId)
+    ) {
+      likeButton.classList.add("card__like-button_is-active");
+    }
+  }
 
-  const likeButton = cardElement.querySelector(".card__like-button");
   likeButton.addEventListener("click", (evt) => {
     evt.stopPropagation();
 
@@ -48,7 +52,7 @@ export function createCard(configCreateCard) {
             cardLikeCounter.textContent = "";
           }
         })
-        .then((err) => {
+        .catch((err) => {
           console.log(err);
         });
     }
@@ -96,22 +100,3 @@ export function createCard(configCreateCard) {
 export function deleteCard(card) {
   card.remove();
 }
-
-// function handleLikeIsActive(evt, catdId) {
-//   evt.stopPropagation();
-//   // classList.toggle() помогает "включить" или "выключить" класс
-//   evt.target.classList.toggle("card__like-button_is-active");
-
-//   if(evt.target.classList.contains('card__like-button_is-active')) {
-//     addLike();
-//   } else {
-//     removeLike();
-//   }
-// }
-
-// createCard(
-//   cardData,
-//   onDeleteButtonClick,
-//   handleOpenImagePopup,
-//   userId
-// )
