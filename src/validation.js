@@ -126,3 +126,9 @@ function toggleButtonState(inputList, buttonElement, validationParameters) {
     buttonElement.classList.remove(validationParameters.inactiveButtonClass);
   }
 }
+
+// if (elem.classList.contains("popup_type_new-card")) {
+//   const formElement = elem.querySelector(".popup__form");
+//   const saveButtonNewCard = formElement.querySelector(".popup__button");
+//   saveButtonNewCard.classList.add("popup__button-error");
+// }

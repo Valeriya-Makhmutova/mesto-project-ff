@@ -22,6 +22,7 @@ import {
   removeLike,
   changeAvatar,
 } from "./api.js";
+import { isMyLikeHere } from "./utils/utils.js";
 
 const profileForm = document.querySelector('.popup__form[name="edit-profile"]');
 const addCardForm = document.querySelector('.popup__form[name="new-place"]');
@@ -40,13 +41,6 @@ const button = document.querySelector(".button");
 
 const originalTextSubmitButton = button.textContent;
 const textContentLoading = "Сохранение...";
-
-// const popupElements = {
-//   popupImage,
-//   imageInPopup,
-//   popupCaption,
-//   closeButtonInImage,
-// };
 
 //     popupEdit                                                   модальное окно "редактировать профиль"
 
@@ -223,30 +217,38 @@ function handleAddingCard(evt) {
   const link = evt.target.querySelector(".popup__input_type_url").value;
   const submitButton = evt.target.querySelector(".popup__button");
 
-  const cardData = { name, link };
-
-  const configCreateCard = {
-    cardData: cardData,
-    deleteCard: deleteCard,
-    handleOpenImagePopup: handleOpenImagePopup,
-    openPopupDeleteCard: openPopupDeleteCard,
-    openModal: openModal,
-    closeModal: closeModal,
-    closeByOverlayClick: closeByOverlayClick,
-    confirmationDeleteButton: confirmationDeleteButton,
-    requestForDelete: deleteThisCard,
-    popupDeleteCard: popupDeleteCard,
-  };
-
-  // const cardElement = createCard(cardData, deleteCard, handleOpenImagePopup);
-
-  const cardElement = createCard(configCreateCard);
   const deleteIcon = document.querySelector(".card__delete-button");
   deleteIcon.addEventListener("click", openPopupDeleteCard);
   submitButton.textContent = textContentLoading;
 
   sendNewCard(name, link)
-    .then(() => {
+    .then((res) => {
+      console.log(res);
+      const cardId = res._id;
+      const cardData = {
+        name,
+        link,
+        cardId,
+      };
+      const configCreateCard = {
+        cardData: cardData,
+        deleteCard: deleteCard,
+        handleOpenImagePopup: handleOpenImagePopup,
+        openPopupDeleteCard: openPopupDeleteCard,
+        openModal: openModal,
+        closeModal: closeModal,
+        closeByOverlayClick: closeByOverlayClick,
+        confirmationDeleteButton: confirmationDeleteButton,
+        requestForDelete: deleteThisCard,
+        popupDeleteCard: popupDeleteCard,
+        addLike: addLike,
+        removeLike: removeLike,
+        // isMyLikeHere: isMyLikeHere
+      };
+      const cardElement = createCard(configCreateCard);
+      return cardElement;
+    })
+    .then((cardElement) => {
       cardsList.prepend(cardElement);
       closeModal(popupNewCard);
     })
@@ -298,6 +300,7 @@ Promise.all([getUserInformation(), getInitialCards()])
         likeCount: card.likes.length,
         cardUserId: card.owner._id,
         cardId: card._id,
+        likesData: card.likes,
       };
       // if (card.owner._id !== userId) {
       //   deleteIcon.style.display = "none";
@@ -319,6 +322,7 @@ Promise.all([getUserInformation(), getInitialCards()])
         removeLike: removeLike,
         getInitialCards: getInitialCards,
         changeAvatar: changeAvatar,
+        isMyLikeHere: isMyLikeHere,
       };
 
       cardsList.append(createCard(configCreateCard));
