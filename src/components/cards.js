@@ -8,13 +8,19 @@ export function createCard(configCreateCard) {
   const likeButton = cardElement.querySelector(".card__like-button");
 
   const deleteIcon = cardElement.querySelector(".card__delete-button");
-  const handleOpendeltePopup = configCreateCard.openPopupDeleteCard;
-  const closeModal = configCreateCard.closeModal;
+  // const handleOpendeltePopup = configCreateCard.openPopupDeleteCard;
+  const onDeleteCard = configCreateCard.onDeleteCard;
+  // const closeModal = configCreateCard.closeModal;
   const addLike = configCreateCard.addLike;
   const removeLike = configCreateCard.removeLike;
   const isMyLikeHere = configCreateCard.isMyLikeHere;
+  const handleDeleteCardSubmit = configCreateCard.handleDeleteCardSubmit;
+  const formDeleteCard = configCreateCard.formDeleteCard;
 
-  deleteIcon.addEventListener("click", handleOpendeltePopup);
+  // deleteIcon.addEventListener("click", handleOpendeltePopup);
+  deleteIcon.addEventListener("click", () => {
+    onDeleteCard(cardId, cardElement);
+  });
 
   cardImage.src = configCreateCard.cardData.link;
   cardImage.alt = configCreateCard.cardData.name;
@@ -33,12 +39,11 @@ export function createCard(configCreateCard) {
   likeButton.addEventListener("click", (evt) => {
     evt.stopPropagation();
 
-    evt.target.classList.toggle("card__like-button_is-active");
-
-    if (evt.target.classList.contains("card__like-button_is-active")) {
+    if (!evt.target.classList.contains("card__like-button_is-active")) {
       addLike(cardId)
         .then((cardData) => {
           cardLikeCounter.textContent = cardData.likes.length;
+          evt.target.classList.add("card__like-button_is-active");
         })
         .catch((err) => {
           console.log(err);
@@ -46,6 +51,7 @@ export function createCard(configCreateCard) {
     } else {
       removeLike(cardId)
         .then((cardData) => {
+          evt.target.classList.remove("card__like-button_is-active");
           if (cardData.likes.length) {
             cardLikeCounter.textContent = cardData.likes.length;
           } else {
@@ -69,34 +75,12 @@ export function createCard(configCreateCard) {
     cardLikeCounter.textContent = configCreateCard.cardData.likeCount;
   }
 
-  const deleteThisCard = configCreateCard.requestForDelete;
+  // const deleteThisCard = configCreateCard.requestForDelete;
 
   if (cardUserId !== configCreateCard.userId) {
     deleteIcon.style.display = "none";
   } else {
-    //передали кнопку из index.js и навешиваем на нее слушатель
-    const confirmationDeleteButton = configCreateCard.confirmationDeleteButton;
-    if (confirmationDeleteButton) {
-      confirmationDeleteButton.addEventListener("click", (evt) => {
-        deleteThisCard(configCreateCard.cardData.cardId)
-          .then(() => {
-            closeModal(configCreateCard.popupDeleteCard);
-          })
-          .then(() => {
-            cardElement.remove();
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
-    }
+    formDeleteCard.addEventListener("submit", handleDeleteCardSubmit);
   }
-
-  // аватар
-
   return cardElement;
-}
-
-export function deleteCard(card) {
-  card.remove();
 }

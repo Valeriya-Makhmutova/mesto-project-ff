@@ -5,7 +5,7 @@ import {
   enableValidation,
   clearValidation,
 } from "./validation.js";
-import { createCard, deleteCard } from "./components/cards.js";
+import { createCard } from "./components/cards.js";
 // import { createCard } from "./components/cards.js";
 import {
   openModal,
@@ -37,6 +37,8 @@ const popupDeleteCard = document.querySelector(".popup_type_delete-card");
 const popupChangeAvatar = document.querySelector(".popup_type_change-avatar");
 const popupEdit = document.querySelector(".popup_type_edit");
 const popupNewCard = document.querySelector(".popup_type_new-card");
+const formDeleteCard = popupDeleteCard.querySelector(".popup__form");
+
 const button = document.querySelector(".button");
 
 const originalTextSubmitButton = button.textContent;
@@ -217,8 +219,6 @@ function handleAddingCard(evt) {
   const link = evt.target.querySelector(".popup__input_type_url").value;
   const submitButton = evt.target.querySelector(".popup__button");
 
-  const deleteIcon = document.querySelector(".card__delete-button");
-  deleteIcon.addEventListener("click", openPopupDeleteCard);
   submitButton.textContent = textContentLoading;
 
   sendNewCard(name, link)
@@ -232,7 +232,6 @@ function handleAddingCard(evt) {
       };
       const configCreateCard = {
         cardData: cardData,
-        deleteCard: deleteCard,
         handleOpenImagePopup: handleOpenImagePopup,
         openPopupDeleteCard: openPopupDeleteCard,
         openModal: openModal,
@@ -243,12 +242,15 @@ function handleAddingCard(evt) {
         popupDeleteCard: popupDeleteCard,
         addLike: addLike,
         removeLike: removeLike,
+        formDeleteCard: formDeleteCard,
+        onDeleteCard: onDeleteCard,
         // isMyLikeHere: isMyLikeHere
       };
       const cardElement = createCard(configCreateCard);
       return cardElement;
     })
     .then((cardElement) => {
+      console.log("cardElement", cardElement);
       cardsList.prepend(cardElement);
       closeModal(popupNewCard);
     })
@@ -273,10 +275,39 @@ function handleOpenImagePopup(name, link) {
 function openPopupDeleteCard(evt) {
   openModal(popupDeleteCard);
 }
+
+export function deleteCard(card) {
+  card.remove();
+}
+
+let cardForDelete = {};
+function onDeleteCard(cardId, cardElement) {
+  cardForDelete = {
+    id: cardId,
+    cardElement,
+  };
+  openModal(popupDeleteCard);
+}
+
+function handleDeleteCardSubmit(evt) {
+  evt.preventDefault();
+
+  if (!cardForDelete.cardElement) return;
+
+  deleteThisCard(cardForDelete.id)
+    .then(() => {
+      deleteCard(cardForDelete.cardElement);
+      closeModal(popupDeleteCard);
+      cardForDelete = {};
+    })
+    .catch((err) => {});
+}
+
 // гет запросы, котоыре нужно будет переместить по назначению
 
 Promise.all([getUserInformation(), getInitialCards()])
   .then(([userData, initialCards]) => {
+    // debugger
     // console.log(userData)
     // console.log(initialCards)
     const userId = userData._id;
@@ -284,11 +315,6 @@ Promise.all([getUserInformation(), getInitialCards()])
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
     profileImage.style.backgroundImage = `url(${userData.avatar})`;
-
-    //     const card = document.querySelector('.card');
-    // console.log('card', card)
-
-    // console.log("deleteIcon", deleteIcon)
 
     initialCards.forEach((card) => {
       // console.log('card', card)
@@ -302,9 +328,6 @@ Promise.all([getUserInformation(), getInitialCards()])
         cardId: card._id,
         likesData: card.likes,
       };
-      // if (card.owner._id !== userId) {
-      //   deleteIcon.style.display = "none";
-      // }
 
       // настройки для создания карточки
       const configCreateCard = {
@@ -323,14 +346,13 @@ Promise.all([getUserInformation(), getInitialCards()])
         getInitialCards: getInitialCards,
         changeAvatar: changeAvatar,
         isMyLikeHere: isMyLikeHere,
+        onDeleteCard: onDeleteCard,
+        handleDeleteCardSubmit: handleDeleteCardSubmit,
+        formDeleteCard: formDeleteCard,
       };
 
       cardsList.append(createCard(configCreateCard));
     });
-  })
-  .then(() => {
-    const deleteIcon = document.querySelector(".card__delete-button");
-    deleteIcon.addEventListener("click", openPopupDeleteCard);
   })
   .catch((err) => {
     console.log(err);
